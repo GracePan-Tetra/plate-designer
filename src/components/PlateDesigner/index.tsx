@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import type { Condition, FillStrategy, MappingConfig, Modality, PlateMapping, SortField } from '../../types';
 import { ALL_CONDITIONS } from '../../data/mockData';
 import { computeMapping } from '../../hooks/usePlateMapping';
@@ -65,6 +66,12 @@ export default function PlateDesigner() {
       );
       return { ...prev, assignments };
     });
+  };
+
+  const handleClear = () => {
+    setMapping(null);
+    setMappingError(null);
+    setConfig((prev) => ({ ...prev, selectedConditions: [] }));
   };
 
   const handleApply = () => {
@@ -138,9 +145,19 @@ export default function PlateDesigner() {
         >
           {/* Plate card */}
           <Paper variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-            <Typography variant="h6" fontWeight={600} mb={1.5}>
-              Condition Mapping
-            </Typography>
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1.5}>
+              <Typography variant="h6" fontWeight={600}>
+                Condition Mapping
+              </Typography>
+              <Button
+                size="small"
+                startIcon={<ClearIcon />}
+                onClick={handleClear}
+                sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}
+              >
+                Clear
+              </Button>
+            </Box>
             {config.selectedModality?.id === 'robocolumn'
               ? <RobocolumnGrid mapping={mapping} />
               : config.selectedModality?.id === 'akta'
