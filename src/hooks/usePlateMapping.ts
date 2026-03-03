@@ -5,7 +5,7 @@ import { getConditionColor } from '../utils/colorPalette';
 
 const TOTAL_WELLS = 96;
 const TOTAL_ROBOCOLUMNS = 8;
-const TOTAL_AKTA_SLOTS = 20;
+const TOTAL_AKTA_SLOTS = 1;
 
 export function computeMapping(config: MappingConfig): PlateMapping {
   const { selectedModality, selectedConditions, replicatesPerCond, fillStrategy, primarySort, secondarySort } = config;

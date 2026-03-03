@@ -48,6 +48,11 @@ export default function PlateDesigner() {
     }));
   };
 
+  const handleConditionSelect = (condition: Condition) => {
+    setConfig((prev) => ({ ...prev, selectedConditions: [condition] }));
+    setMapping(null);
+  };
+
   const handleRemoveCondition = (conditionId: string) => {
     setConfig((prev) => ({
       ...prev,
@@ -74,19 +79,32 @@ export default function PlateDesigner() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f8f9fa', p: 3 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#f8f9fa', p: { xs: 1.5, sm: 2, md: 3 } }}>
       {/* Breadcrumb */}
       <Typography variant="body2" color="text.secondary" mb={0.5}>
         Project X / All Experiment /
       </Typography>
 
       {/* Page title */}
-      <Typography variant="h4" fontWeight={700} mb={2.5}>
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        mb={{ xs: 1.5, md: 2.5 }}
+        sx={{ fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.125rem' } }}
+      >
         Experiment Name
       </Typography>
 
-      {/* Main two-column layout */}
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', height: 'calc(100vh - 120px)' }}>
+      {/* Main layout: side-by-side on md+, stacked on mobile */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+          alignItems: { xs: 'stretch', md: 'flex-start' },
+          height: { xs: 'auto', md: 'calc(100vh - 120px)' },
+        }}
+      >
         {/* Left: Configuration Panel */}
         <ConfigurationPanel
           config={config}
@@ -103,12 +121,23 @@ export default function PlateDesigner() {
           onPageChange={setPage}
           isExpanded={isExpanded}
           onExpandToggle={() => setIsExpanded((p) => !p)}
+          onConditionSelect={handleConditionSelect}
         />
 
         {/* Right: Plate + Legend */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, overflowY: 'auto', height: '100%' }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: 0,
+            overflowY: { xs: 'visible', md: 'auto' },
+            height: { xs: 'auto', md: '100%' },
+          }}
+        >
           {/* Plate card */}
-          <Paper variant="outlined" sx={{ p: 2 }}>
+          <Paper variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
             <Typography variant="h6" fontWeight={600} mb={1.5}>
               Condition Mapping
             </Typography>

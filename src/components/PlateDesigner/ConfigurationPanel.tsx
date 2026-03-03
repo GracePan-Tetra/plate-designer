@@ -7,6 +7,7 @@ import {
   InputLabel,
   MenuItem,
   Paper,
+  Radio,
   Select,
   Table,
   TableBody,
@@ -40,6 +41,7 @@ interface ConfigurationPanelProps {
   onPageChange: (p: number) => void;
   isExpanded: boolean;
   onExpandToggle: () => void;
+  onConditionSelect: (condition: Condition) => void;
 }
 
 export default function ConfigurationPanel({
@@ -57,8 +59,10 @@ export default function ConfigurationPanel({
   onPageChange,
   isExpanded,
   onExpandToggle,
+  onConditionSelect,
 }: ConfigurationPanelProps) {
   const { selectedModality, selectedConditions, replicatesPerCond, fillStrategy, primarySort, secondarySort } = config;
+  const isAkta = selectedModality?.id === 'akta';
 
   const allConditions = ALL_CONDITIONS;
   const totalPages = Math.max(1, Math.ceil(allConditions.length / ROWS_PER_PAGE));
@@ -71,11 +75,14 @@ export default function ConfigurationPanel({
     <Paper
       variant="outlined"
       sx={{
-        width: isExpanded ? '50vw' : 400,
+        width: isExpanded
+          ? { xs: '100%', md: '50vw' }
+          : { xs: '100%', md: 400 },
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: { xs: 'auto', md: '100%' },
+        minHeight: { xs: 480, md: 'unset' },
         overflow: 'hidden',
       }}
     >
@@ -136,12 +143,14 @@ export default function ConfigurationPanel({
               <TableHead>
                 <TableRow>
                   <TableCell padding="checkbox" sx={{ bgcolor: 'grey.200' }}>
-                    <Checkbox
-                      size="small"
-                      checked={allChecked}
-                      indeterminate={someChecked && !allChecked}
-                      onChange={(e) => onSelectAll(e.target.checked)}
-                    />
+                    {!isAkta && (
+                      <Checkbox
+                        size="small"
+                        checked={allChecked}
+                        indeterminate={someChecked && !allChecked}
+                        onChange={(e) => onSelectAll(e.target.checked)}
+                      />
+                    )}
                   </TableCell>
                   <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Condition ID</TableCell>
                   <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Factor 1</TableCell>
@@ -163,16 +172,25 @@ export default function ConfigurationPanel({
                       <TableRow
                         key={cond.id}
                         hover
-                        onClick={() => onConditionToggle(cond)}
+                        onClick={() => isAkta ? onConditionSelect(cond) : onConditionToggle(cond)}
                         sx={{ cursor: 'pointer' }}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox
-                            size="small"
-                            checked={checked}
-                            onChange={() => onConditionToggle(cond)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                          {isAkta ? (
+                            <Radio
+                              size="small"
+                              checked={checked}
+                              onChange={() => onConditionSelect(cond)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          ) : (
+                            <Checkbox
+                              size="small"
+                              checked={checked}
+                              onChange={() => onConditionToggle(cond)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          )}
                         </TableCell>
                         <TableCell sx={{ fontSize: 12 }}>{cond.name}</TableCell>
                         <TableCell sx={{ fontSize: 12 }}>{cond.factor1}</TableCell>
