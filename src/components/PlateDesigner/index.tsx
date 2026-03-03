@@ -6,6 +6,7 @@ import { computeMapping } from '../../hooks/usePlateMapping';
 import ConfigurationPanel from './ConfigurationPanel';
 import PlateGrid from './PlateGrid';
 import RobocolumnGrid from './RobocolumnGrid';
+import AktaGrid from './AktaGrid';
 import LegendTable from './LegendTable';
 
 const DEFAULT_CONFIG: MappingConfig = {
@@ -110,6 +111,8 @@ export default function PlateDesigner() {
             </Typography>
             {config.selectedModality?.id === 'robocolumn'
               ? <RobocolumnGrid mapping={mapping} />
+              : config.selectedModality?.id === 'akta'
+              ? <AktaGrid mapping={mapping} />
               : <PlateGrid mapping={mapping} />
             }
           </Paper>

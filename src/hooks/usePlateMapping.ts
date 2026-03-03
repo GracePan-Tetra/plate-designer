@@ -5,6 +5,7 @@ import { getConditionColor } from '../utils/colorPalette';
 
 const TOTAL_WELLS = 96;
 const TOTAL_ROBOCOLUMNS = 8;
+const TOTAL_AKTA_SLOTS = 20;
 
 export function computeMapping(config: MappingConfig): PlateMapping {
   const { selectedModality, selectedConditions, replicatesPerCond, fillStrategy, primarySort, secondarySort } = config;
@@ -20,7 +21,8 @@ export function computeMapping(config: MappingConfig): PlateMapping {
   }
 
   const isRobocolumn = selectedModality?.id === 'robocolumn';
-  const maxSlots = isRobocolumn ? TOTAL_ROBOCOLUMNS : TOTAL_WELLS;
+  const isAkta = selectedModality?.id === 'akta';
+  const maxSlots = isRobocolumn ? TOTAL_ROBOCOLUMNS : isAkta ? TOTAL_AKTA_SLOTS : TOTAL_WELLS;
   const totalNeeded = selectedConditions.length * replicatesPerCond;
 
   if (totalNeeded > maxSlots) {
@@ -31,6 +33,8 @@ export function computeMapping(config: MappingConfig): PlateMapping {
       totalWellsUsed: 0,
       error: isRobocolumn
         ? `Total columns needed (${totalNeeded}) exceeds 8. Reduce conditions or replicates.`
+        : isAkta
+        ? `Total slots needed (${totalNeeded}) exceeds ${TOTAL_AKTA_SLOTS}. Reduce conditions or replicates.`
         : `Total wells needed (${totalNeeded}) exceeds 96. Reduce conditions or replicates.`,
     };
   }
@@ -81,6 +85,25 @@ export function computeMapping(config: MappingConfig): PlateMapping {
         const colId = `col-${colNumber}`;
         assignments[colId] = {
           wellId: colId,
+          conditionId: condition.id,
+          conditionName: condition.name,
+          color,
+          replicateIndex: rep + 1,
+        };
+      }
+    });
+  } else if (isAkta) {
+    // Fill slots left to right: akta-1, akta-2, ...
+    sorted.forEach((condition, condIndex) => {
+      const color = getConditionColor(condIndex);
+      conditionColors[condition.id] = color;
+      conditionCounts[condition.id] = replicatesPerCond;
+
+      for (let rep = 0; rep < replicatesPerCond; rep++) {
+        const slotNumber = condIndex * replicatesPerCond + rep + 1;
+        const slotId = `akta-${slotNumber}`;
+        assignments[slotId] = {
+          wellId: slotId,
           conditionId: condition.id,
           conditionName: condition.name,
           color,
