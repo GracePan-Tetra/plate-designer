@@ -84,21 +84,19 @@ export default function ConfigurationPanel({
       <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {/* Modality selector */}
         <Box>
-          <Typography variant="body2" color="text.secondary" mb={0.5}>
+          <Typography variant="subtitle1" fontWeight={700} mb={0.5}>
             Select Modality
           </Typography>
           <FormControl fullWidth size="small">
+            <InputLabel>Select Modality</InputLabel>
             <Select
+              label="Select Modality"
               value={selectedModality?.id ?? ''}
               onChange={(e) => {
                 const found = MODALITIES.find((m) => m.id === e.target.value) ?? null;
                 onModalityChange(found);
               }}
-              displayEmpty
             >
-              <MenuItem value="" disabled>
-                <em>Select a modality…</em>
-              </MenuItem>
               {MODALITIES.map((m) => (
                 <MenuItem key={m.id} value={m.id}>
                   {m.name}
@@ -113,7 +111,7 @@ export default function ConfigurationPanel({
         {/* Conditions table */}
         <Box>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="subtitle1" fontWeight={700}>
               Select Conditions
             </Typography>
             <Box display="flex" gap={0.5}>
