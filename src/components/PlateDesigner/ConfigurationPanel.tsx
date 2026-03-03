@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -85,7 +84,7 @@ export default function ConfigurationPanel({
         {/* Modality selector */}
         <Box>
           <Typography variant="subtitle1" fontWeight={700} mb={0.5}>
-            Select Modality
+            Define Scale
           </Typography>
           <FormControl fullWidth size="small">
             <InputLabel>Select Modality</InputLabel>
@@ -105,8 +104,6 @@ export default function ConfigurationPanel({
             </Select>
           </FormControl>
         </Box>
-
-        <Divider />
 
         {/* Conditions table */}
         <Box>
@@ -217,8 +214,6 @@ export default function ConfigurationPanel({
             </Box>
           )}
         </Box>
-
-        <Divider />
 
         {/* Mapping Settings */}
         <Box>
