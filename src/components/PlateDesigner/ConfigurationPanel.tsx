@@ -83,7 +83,7 @@ export default function ConfigurationPanel({
       <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {/* Modality selector */}
         <Box>
-          <Typography variant="subtitle1" fontWeight={700} mb={0.5}>
+          <Typography variant="subtitle1" fontWeight={700} mb={1.5}>
             Define Scale
           </Typography>
           <FormControl fullWidth size="small">
