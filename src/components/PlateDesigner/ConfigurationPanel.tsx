@@ -1,0 +1,308 @@
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import type { Condition, FillStrategy, MappingConfig, Modality, SortField } from '../../types';
+import { ALL_CONDITIONS, MODALITIES } from '../../data/mockData';
+
+const ROWS_PER_PAGE = 10;
+
+interface ConfigurationPanelProps {
+  config: MappingConfig;
+  onModalityChange: (modality: Modality | null) => void;
+  onConditionToggle: (condition: Condition) => void;
+  onSelectAll: (checked: boolean) => void;
+  onReplicatesChange: (n: number) => void;
+  onFillStrategyChange: (s: FillStrategy) => void;
+  onPrimarySortChange: (s: SortField) => void;
+  onSecondarySortChange: (s: SortField) => void;
+  onApply: () => void;
+  error: string | null;
+  page: number;
+  onPageChange: (p: number) => void;
+}
+
+export default function ConfigurationPanel({
+  config,
+  onModalityChange,
+  onConditionToggle,
+  onSelectAll,
+  onReplicatesChange,
+  onFillStrategyChange,
+  onPrimarySortChange,
+  onSecondarySortChange,
+  onApply,
+  error,
+  page,
+  onPageChange,
+}: ConfigurationPanelProps) {
+  const { selectedModality, selectedConditions, replicatesPerCond, fillStrategy, primarySort, secondarySort } = config;
+
+  const allConditions = ALL_CONDITIONS;
+  const totalPages = Math.max(1, Math.ceil(allConditions.length / ROWS_PER_PAGE));
+  const pageConditions = allConditions.slice((page - 1) * ROWS_PER_PAGE, page * ROWS_PER_PAGE);
+
+  const allChecked = allConditions.length > 0 && allConditions.every((c) => selectedConditions.some((s) => s.id === c.id));
+  const someChecked = selectedConditions.some((s) => allConditions.some((c) => c.id === s.id));
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        width: 400,
+        flexShrink: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="h6" fontWeight={600}>
+          Configuration
+        </Typography>
+      </Box>
+
+      <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* Modality selector */}
+        <Box>
+          <Typography variant="body2" color="text.secondary" mb={0.5}>
+            Select Modality
+          </Typography>
+          <FormControl fullWidth size="small">
+            <Select
+              value={selectedModality?.id ?? ''}
+              onChange={(e) => {
+                const found = MODALITIES.find((m) => m.id === e.target.value) ?? null;
+                onModalityChange(found);
+              }}
+              displayEmpty
+            >
+              <MenuItem value="" disabled>
+                <em>Select a modality…</em>
+              </MenuItem>
+              {MODALITIES.map((m) => (
+                <MenuItem key={m.id} value={m.id}>
+                  {m.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Divider />
+
+        {/* Conditions table */}
+        <Box>
+          <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+            <Typography variant="body2" color="text.secondary">
+              Select Conditions
+            </Typography>
+            <Box display="flex" gap={0.5}>
+              <Button size="small" startIcon={<FilterListIcon />} sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}>
+                Filter
+              </Button>
+              <Button size="small" startIcon={<OpenInFullIcon />} sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}>
+                Expand
+              </Button>
+            </Box>
+          </Box>
+
+          <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+            <Table size="small" stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="checkbox" sx={{ bgcolor: 'grey.200' }}>
+                    <Checkbox
+                      size="small"
+                      checked={allChecked}
+                      indeterminate={someChecked && !allChecked}
+                      onChange={(e) => onSelectAll(e.target.checked)}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Condition ID</TableCell>
+                  <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Factor 1</TableCell>
+                  <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Factor 2</TableCell>
+                  <TableCell sx={{ bgcolor: 'grey.200', fontWeight: 600, fontSize: 12 }}>Factor 3</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {pageConditions.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ color: 'text.secondary', py: 3 }}>
+                      No conditions
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pageConditions.map((cond) => {
+                    const checked = selectedConditions.some((s) => s.id === cond.id);
+                    return (
+                      <TableRow
+                        key={cond.id}
+                        hover
+                        onClick={() => onConditionToggle(cond)}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            size="small"
+                            checked={checked}
+                            onChange={() => onConditionToggle(cond)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ fontSize: 12 }}>{cond.name}</TableCell>
+                        <TableCell sx={{ fontSize: 12 }}>{cond.factor1}</TableCell>
+                        <TableCell sx={{ fontSize: 12 }}>{cond.factor2}</TableCell>
+                        <TableCell sx={{ fontSize: 12 }}>{cond.factor3}</TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Button
+                  size="small"
+                  disabled={page <= 1}
+                  onClick={() => onPageChange(page - 1)}
+                  sx={{ minWidth: 28, p: 0.5, fontSize: 12 }}
+                >
+                  {'<'}
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <Button
+                    key={p}
+                    size="small"
+                    variant={p === page ? 'contained' : 'text'}
+                    onClick={() => onPageChange(p)}
+                    sx={{ minWidth: 28, p: 0.5, fontSize: 12 }}
+                  >
+                    {p}
+                  </Button>
+                ))}
+                <Button
+                  size="small"
+                  disabled={page >= totalPages}
+                  onClick={() => onPageChange(page + 1)}
+                  sx={{ minWidth: 28, p: 0.5, fontSize: 12 }}
+                >
+                  {'>'}
+                </Button>
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {ROWS_PER_PAGE} / page
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        <Divider />
+
+        {/* Mapping Settings */}
+        <Box>
+          <Typography variant="subtitle1" fontWeight={700} mb={1.5}>
+            Mapping Setting
+          </Typography>
+
+          <Box display="flex" flexDirection="column" gap={1.5}>
+            <TextField
+              label="Replicates per Condition"
+              type="number"
+              size="small"
+              fullWidth
+              value={replicatesPerCond}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                if (!isNaN(v) && v >= 1) onReplicatesChange(v);
+              }}
+              inputProps={{ min: 1, max: 96 }}
+            />
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Fill Strategy</InputLabel>
+              <Select
+                label="Fill Strategy"
+                value={fillStrategy}
+                onChange={(e) => onFillStrategyChange(e.target.value as FillStrategy)}
+              >
+                <MenuItem value="vertical-snake">Snake (Vertical)</MenuItem>
+                <MenuItem value="horizontal-snake">Snake (Horizontal)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Primary Sort</InputLabel>
+              <Select
+                label="Primary Sort"
+                value={primarySort}
+                onChange={(e) => onPrimarySortChange(e.target.value as SortField)}
+              >
+                <MenuItem value="none">None</MenuItem>
+                <MenuItem value="factor1">Factor 1</MenuItem>
+                <MenuItem value="factor2">Factor 2</MenuItem>
+                <MenuItem value="factor3">Factor 3</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Secondary Sort</InputLabel>
+              <Select
+                label="Secondary Sort"
+                value={secondarySort}
+                onChange={(e) => onSecondarySortChange(e.target.value as SortField)}
+              >
+                <MenuItem value="none">None</MenuItem>
+                <MenuItem value="factor1">Factor 1</MenuItem>
+                <MenuItem value="factor2">Factor 2</MenuItem>
+                <MenuItem value="factor3">Factor 3</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ fontSize: 12 }}>
+            {error}
+          </Alert>
+        )}
+      </Box>
+
+      {/* Apply button pinned at bottom */}
+      <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={onApply}
+          disabled={selectedConditions.length === 0}
+          sx={{ bgcolor: '#1e3a5f', '&:hover': { bgcolor: '#16325c' }, fontWeight: 700, letterSpacing: 1 }}
+        >
+          APPLY MAPPING
+        </Button>
+      </Box>
+    </Paper>
+  );
+}
