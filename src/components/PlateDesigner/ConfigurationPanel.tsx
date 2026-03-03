@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import type { Condition, FillStrategy, MappingConfig, Modality, SortField } from '../../types';
 import { ALL_CONDITIONS, MODALITIES } from '../../data/mockData';
 
@@ -37,6 +38,8 @@ interface ConfigurationPanelProps {
   error: string | null;
   page: number;
   onPageChange: (p: number) => void;
+  isExpanded: boolean;
+  onExpandToggle: () => void;
 }
 
 export default function ConfigurationPanel({
@@ -52,6 +55,8 @@ export default function ConfigurationPanel({
   error,
   page,
   onPageChange,
+  isExpanded,
+  onExpandToggle,
 }: ConfigurationPanelProps) {
   const { selectedModality, selectedConditions, replicatesPerCond, fillStrategy, primarySort, secondarySort } = config;
 
@@ -66,7 +71,7 @@ export default function ConfigurationPanel({
     <Paper
       variant="outlined"
       sx={{
-        width: 400,
+        width: isExpanded ? '50vw' : 400,
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
@@ -115,8 +120,13 @@ export default function ConfigurationPanel({
               <Button size="small" startIcon={<FilterListIcon />} sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}>
                 Filter
               </Button>
-              <Button size="small" startIcon={<OpenInFullIcon />} sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}>
-                Expand
+              <Button
+                size="small"
+                startIcon={isExpanded ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
+                onClick={onExpandToggle}
+                sx={{ textTransform: 'none', minWidth: 0, fontSize: 12 }}
+              >
+                {isExpanded ? 'Collapse' : 'Expand'}
               </Button>
             </Box>
           </Box>

@@ -23,6 +23,7 @@ export default function PlateDesigner() {
   const [mapping, setMapping] = useState<PlateMapping | null>(null);
   const [mappingError, setMappingError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const handleModalityChange = (modality: Modality | null) => {
     setConfig((prev) => ({ ...prev, selectedModality: modality }));
@@ -100,6 +101,8 @@ export default function PlateDesigner() {
           error={mappingError}
           page={page}
           onPageChange={setPage}
+          isExpanded={isExpanded}
+          onExpandToggle={() => setIsExpanded((p) => !p)}
         />
 
         {/* Right: Plate + Legend */}
