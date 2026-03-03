@@ -24,15 +24,6 @@ export default function PlateGrid({ mapping }: PlateGridProps) {
       style={{ display: 'block' }}
       aria-label="96-well plate"
     >
-      {/* Background */}
-      <rect
-        x={LABEL_OFFSET - 8}
-        y={TOP_OFFSET - 8}
-        width={COL_COUNT * CELL_SIZE + 16}
-        height={ROW_LABELS.length * CELL_SIZE + 16}
-        rx={6}
-        fill="#e5e7eb"
-      />
 
       {/* Column labels */}
       {Array.from({ length: COL_COUNT }, (_, c) => (
