@@ -30,7 +30,7 @@ export default function LegendTable({
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
-      <Typography variant="h6" fontWeight={600} mb={1.5}>
+      <Typography sx={{ fontSize: 12, fontWeight: 400 }} mb={1.5}>
         Selected Conditions
       </Typography>
       <TableContainer>

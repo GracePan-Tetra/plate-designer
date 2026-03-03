@@ -86,8 +86,8 @@ export default function ConfigurationPanel({
         overflow: 'hidden',
       }}
     >
-      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="h6" fontWeight={600}>
+      <Box sx={{ px: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography sx={{ fontSize: 12, fontWeight: 400 }}>
           Configuration
         </Typography>
       </Box>

@@ -96,8 +96,9 @@ export default function PlateDesigner() {
       <Typography
         variant="h4"
         fontWeight={700}
+        mt={2}
         mb={{ xs: 1.5, md: 2.5 }}
-        sx={{ fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2.125rem' } }}
+        sx={{ fontSize: '24px' }}
       >
         Experiment Name
       </Typography>
@@ -144,9 +145,14 @@ export default function PlateDesigner() {
           }}
         >
           {/* Plate card */}
-          <Paper variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1.5}>
-              <Typography variant="h6" fontWeight={600}>
+          <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ px: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}
+            >
+              <Typography sx={{ fontSize: 12, fontWeight: 400 }}>
                 Condition Mapping
               </Typography>
               <Button
@@ -158,12 +164,14 @@ export default function PlateDesigner() {
                 Clear
               </Button>
             </Box>
-            {config.selectedModality?.id === 'robocolumn'
-              ? <RobocolumnGrid mapping={mapping} />
-              : config.selectedModality?.id === 'akta'
-              ? <AktaGrid mapping={mapping} />
-              : <PlateGrid mapping={mapping} />
-            }
+            <Box sx={{ p: 2 }}>
+              {config.selectedModality?.id === 'robocolumn'
+                ? <RobocolumnGrid mapping={mapping} />
+                : config.selectedModality?.id === 'akta'
+                ? <AktaGrid mapping={mapping} />
+                : <PlateGrid mapping={mapping} />
+              }
+            </Box>
           </Paper>
 
           {/* Selected Conditions / Legend */}
