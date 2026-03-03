@@ -1,3 +1,4 @@
+import { Tooltip } from '@mui/material';
 import type { PlateMapping } from '../../types';
 
 interface RobocolumnGridProps {
@@ -28,6 +29,9 @@ export default function RobocolumnGrid({ mapping }: RobocolumnGridProps) {
         const colId = `col-${c + 1}`;
         const assignment = mapping?.assignments[colId];
         const fill = assignment?.color ?? '#ffffff';
+        const tooltipTitle = assignment
+          ? `${c + 1} – ${assignment.conditionName} (rep ${assignment.replicateIndex})`
+          : `Column ${c + 1}`;
 
         return (
           <g key={c}>
@@ -42,17 +46,20 @@ export default function RobocolumnGrid({ mapping }: RobocolumnGridProps) {
             >
               {c + 1}
             </text>
-            <rect
-              x={x}
-              y={LABEL_H}
-              width={COL_WIDTH}
-              height={COL_HEIGHT}
-              rx={2}
-              ry={2}
-              fill={fill}
-              stroke="#c8cdd4"
-              strokeWidth={1.5}
-            />
+            <Tooltip title={tooltipTitle} arrow placement="top">
+              <rect
+                x={x}
+                y={LABEL_H}
+                width={COL_WIDTH}
+                height={COL_HEIGHT}
+                rx={2}
+                ry={2}
+                fill={fill}
+                stroke="#c8cdd4"
+                strokeWidth={1.5}
+                style={{ cursor: assignment ? 'pointer' : 'default' }}
+              />
+            </Tooltip>
           </g>
         );
       })}
