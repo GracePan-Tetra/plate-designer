@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import type { Condition, FillStrategy, MappingConfig, Modality, PlateMapping, SortField } from '../../types';
+import type { Condition, FillStrategy, MappingConfig, Modality, PlateMapping, SortField, WellAssignment } from '../../types';
 import { ALL_CONDITIONS } from '../../data/mockData';
 import { computeMapping } from '../../hooks/usePlateMapping';
+import { getConditionColor } from '../../utils/colorPalette';
 import ConfigurationPanel from './ConfigurationPanel';
 import PlateGrid from './PlateGrid';
 import RobocolumnGrid from './RobocolumnGrid';
@@ -65,6 +66,53 @@ export default function PlateDesigner() {
         Object.entries(prev.assignments).filter(([, v]) => v.conditionId !== conditionId)
       );
       return { ...prev, assignments };
+    });
+  };
+
+  const handleWellDrop = (wellId: string, conditionId: string) => {
+    const condition = ALL_CONDITIONS.find((c) => c.id === conditionId);
+    if (!condition) return;
+
+    // Auto-add condition to selectedConditions if not already there
+    setConfig((prev) => ({
+      ...prev,
+      selectedConditions: prev.selectedConditions.some((c) => c.id === conditionId)
+        ? prev.selectedConditions
+        : [...prev.selectedConditions, condition],
+    }));
+
+    setMapping((prev) => {
+      const base: PlateMapping = prev ?? {
+        assignments: {},
+        conditionColors: {},
+        conditionCounts: {},
+        totalWellsUsed: 0,
+        error: null,
+      };
+
+      // Reuse existing color or assign the next one
+      const color =
+        base.conditionColors[conditionId] ??
+        getConditionColor(Object.keys(base.conditionColors).length);
+
+      const newAssignments: Record<string, WellAssignment> = {
+        ...base.assignments,
+        [wellId]: { wellId, conditionId, conditionName: condition.name, color, replicateIndex: 1 },
+      };
+
+      const newCounts: Record<string, number> = {};
+      Object.values(newAssignments).forEach((a) => {
+        newCounts[a.conditionId] = (newCounts[a.conditionId] ?? 0) + 1;
+      });
+
+      return {
+        ...base,
+        assignments: newAssignments,
+        conditionColors: { ...base.conditionColors, [conditionId]: color },
+        conditionCounts: newCounts,
+        totalWellsUsed: Object.keys(newAssignments).length,
+        error: null,
+      };
     });
   };
 
@@ -169,7 +217,7 @@ export default function PlateDesigner() {
                 ? <RobocolumnGrid mapping={mapping} />
                 : config.selectedModality?.id === 'akta'
                 ? <AktaGrid mapping={mapping} />
-                : <PlateGrid mapping={mapping} />
+                : <PlateGrid mapping={mapping} onWellDrop={handleWellDrop} />
               }
             </Box>
           </Paper>

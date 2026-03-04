@@ -172,8 +172,13 @@ export default function ConfigurationPanel({
                       <TableRow
                         key={cond.id}
                         hover
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('conditionId', cond.id);
+                          e.dataTransfer.effectAllowed = 'copy';
+                        }}
                         onClick={() => isAkta ? onConditionSelect(cond) : onConditionToggle(cond)}
-                        sx={{ cursor: 'pointer' }}
+                        sx={{ cursor: 'grab' }}
                       >
                         <TableCell padding="checkbox">
                           {isAkta ? (
